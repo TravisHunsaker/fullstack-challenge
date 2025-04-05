@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { IDeal, TDealStatus } from './types';
 import styled from 'styled-components';
 import { DealSection } from './components/DealSection';
+import { Filters } from './components/Filters';
 
 const statusSections = [
 	{ label: 'Build Proposal', key: 'build' },
@@ -14,8 +15,6 @@ function App() {
 	const [deals, setDeals] = useState<IDeal[]>([]);
 	const [status, setStatus] = useState<TDealStatus | ''>('');
 	const [year, setYear] = useState<string | ''>('');
-
-	console.log(deals);
 
 	useEffect(() => {
 		handleGetDeals();
@@ -45,10 +44,18 @@ function App() {
 		}, {});
 	}, [deals]);
 
+	const handeStatusChange = (state: TDealStatus | '') => setStatus(state);
+	const handeYearChange = (value: string | '') => setYear(value);
+
 	return (
 		<Container>
 			<Title>Deals</Title>
-
+			<Filters
+				status={status}
+				year={year}
+				onStatusChange={handeStatusChange}
+				onYearChange={handeYearChange}
+			/>
 			<Sections>
 				{statusSections.map(({ label, key }) => (
 					<DealSection

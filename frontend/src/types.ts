@@ -1,5 +1,10 @@
 export type TDealStatus = 'build' | 'pitch' | 'negotiation';
 
+export type TStatusItem = {
+	value: string | '';
+	name: string;
+};
+
 export interface IOrganization {
 	id: number;
 	name: string;
