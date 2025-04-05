@@ -1,10 +1,19 @@
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { IDeal, TDealStatus } from './types';
+import styled from 'styled-components';
+import { DealSection } from './components/DealSection';
+
+const statusSections = [
+	{ label: 'Build Proposal', key: 'build' },
+	{ label: 'Pitch Proposal', key: 'pitch' },
+	{ label: 'Negotiation', key: 'negotiation' }
+];
 
 function App() {
-	const [deals, setDeals] = useState([]);
-	const [status, setStatus] = useState('');
-	const [year, setYear] = useState('');
+	const [deals, setDeals] = useState<IDeal[]>([]);
+	const [status, setStatus] = useState<TDealStatus | ''>('');
+	const [year, setYear] = useState<string | ''>('');
 
 	console.log(deals);
 
@@ -28,26 +37,46 @@ function App() {
 		}
 	};
 
+	const dealsByStatus = useMemo(() => {
+		return deals.reduce<Record<string, IDeal[]>>((acc, deal) => {
+			if (!acc[deal.status]) acc[deal.status] = [];
+			acc[deal.status].push(deal);
+			return acc;
+		}, {});
+	}, [deals]);
+
 	return (
-		<div>
-			<h1>🎉 Welcome to the Fullstack Challenge! 🎉</h1>
-			<p>
-				Replace the content here with your own code and organize files
-				as you see fit
-			</p>
-			<h2>Rules</h2>
-			<ul>
-				<li>Spend no more than 4 hours working on the challenge</li>
-				<li>Make use of any libraries and tools that you like </li>
-				<li>
-					Feel free to use help from LLMs but be prepared to explain
-					your code and the choices you made
-				</li>
-				<li>Commit as you go. We want to see your thought process</li>
-			</ul>
-			<p>Good luck!</p>
-		</div>
+		<Container>
+			<Title>Deals</Title>
+
+			<Sections>
+				{statusSections.map(({ label, key }) => (
+					<DealSection
+						key={key}
+						label={label}
+						deals={dealsByStatus[key] || []}
+					/>
+				))}
+			</Sections>
+		</Container>
 	);
 }
 
 export default App;
+
+const Container = styled.div`
+	display: flex;
+	flex-direction: column;
+	gap: 25px;
+	padding: 48px;
+`;
+
+const Title = styled.div`
+	font-size: 42px;
+	font-weight: bold;
+`;
+
+const Sections = styled.div`
+	display: flex;
+	gap: 15px;
+`;
